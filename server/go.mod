@@ -16,7 +16,7 @@ require (
 	github.com/jordan-wright/email v0.0.0-20190819015918-041e0cec78b0
 	github.com/kataras/iris/v12 v12.2.0-alpha2
 	github.com/microcosm-cc/bluemonday v1.0.16
-	github.com/mlogclub/simple v1.1.10
+	github.com/mlogclub/simple v1.1.14
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/panjf2000/ants/v2 v2.4.6
 	github.com/robfig/cron v1.2.0
@@ -61,6 +61,7 @@ require (
 	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/kataras/blocks v0.0.4 // indirect
 	github.com/kataras/golog v0.1.6 // indirect
 	github.com/kataras/neffos v0.0.18 // indirect

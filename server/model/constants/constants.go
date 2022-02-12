@@ -1,8 +1,10 @@
 package constants
 
 const (
-	DefaultTokenExpireDays = 7   // 用户登录token默认有效期
-	SummaryLen             = 256 // 摘要长度
+	DefaultTokenExpireDays       = 7   // 用户登录token默认有效期
+	SummaryLen                   = 256 // 摘要长度
+	UploadMaxM                   = 10
+	UploadMaxBytes         int64 = 1024 * 1024 * 1024 * UploadMaxM
 )
 
 // 系统配置
@@ -69,22 +71,6 @@ const (
 	ContentTypeHtml     = "html"
 	ContentTypeMarkdown = "markdown"
 	ContentTypeText     = "text"
-)
-
-// 消息状态
-const (
-	MsgStatusUnread   = 0 // 消息未读
-	MsgStatusHaveRead = 1 // 消息已读
-)
-
-// 消息类型
-const (
-	MsgTypeTopicComment   = 0 // 收到话题评论
-	MsgTypeCommentReply   = 1 // 收到他人回复
-	MsgTypeTopicLike      = 2 // 收到点赞
-	MsgTypeTopicFavorite  = 3 // 话题被收藏
-	MsgTypeTopicRecommend = 4 // 话题被设为推荐
-	MsgTypeTopicDelete    = 5 // 话题被删除
 )
 
 // 第三方账号类型

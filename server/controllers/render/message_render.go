@@ -2,7 +2,10 @@ package render
 
 import (
 	"bbs-go/model"
-	"bbs-go/services"
+	"bbs-go/model/constants"
+	"bbs-go/pkg/msg"
+	"bbs-go/pkg/urls"
+	"github.com/tidwall/gjson"
 )
 
 func BuildMessage(msg *model.Message) *model.MessageResponse {
@@ -14,7 +17,7 @@ func BuildMessage(msg *model.Message) *model.MessageResponse {
 	if msg.FromId <= 0 {
 		from.Nickname = "系统通知"
 	}
-	detailUrl := services.MessageService.GetMessageDetailUrl(msg)
+	detailUrl := getMessageDetailUrl(msg)
 	resp := &model.MessageResponse{
 		MessageId:    msg.Id,
 		From:         from,
@@ -31,7 +34,7 @@ func BuildMessage(msg *model.Message) *model.MessageResponse {
 	return resp
 }
 
-// 渲染消息列表
+// BuildMessages 渲染消息列表
 func BuildMessages(messages []model.Message) []model.MessageResponse {
 	if len(messages) == 0 {
 		return nil
@@ -41,4 +44,26 @@ func BuildMessages(messages []model.Message) []model.MessageResponse {
 		responses = append(responses, *BuildMessage(&message))
 	}
 	return responses
+}
+
+// getMessageDetailUrl 查看消息详情链接地址
+func getMessageDetailUrl(t *model.Message) string {
+	msgType := msg.Type(t.Type)
+	if msgType == msg.TypeTopicComment || msgType == msg.TypeArticleComment || msgType == msg.TypeCommentReply {
+		entityType := gjson.Get(t.ExtraData, "entityType")
+		entityId := gjson.Get(t.ExtraData, "entityId")
+		if entityType.String() == constants.EntityArticle {
+			return urls.ArticleUrl(entityId.Int())
+		} else if entityType.String() == constants.EntityTopic {
+			return urls.TopicUrl(entityId.Int())
+		}
+	} else if msgType == msg.TypeTopicLike ||
+		msgType == msg.TypeTopicFavorite ||
+		msgType == msg.TypeTopicRecommend {
+		topicId := gjson.Get(t.ExtraData, "topicId")
+		if topicId.Exists() && topicId.Int() > 0 {
+			return urls.TopicUrl(topicId.Int())
+		}
+	}
+	return urls.AbsUrl("/user/messages")
 }

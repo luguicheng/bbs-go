@@ -96,8 +96,6 @@ func (s *topicService) Delete(topicId, deleteUserId int64, r *http.Request) erro
 		es.UpdateTopicIndex(s.Get(topicId))
 		// 删掉标签文章
 		TopicTagService.DeleteByTopicId(topicId)
-		// 发送消息
-		MessageService.SendTopicDeleteMsg(topicId, deleteUserId)
 		// 发送事件
 		event.Send(event.TopicDeleteEvent{
 			UserId:       topic.UserId,
@@ -253,12 +251,17 @@ func (s *topicService) SetRecommend(topicId int64, recommend bool) error {
 		}); err != nil {
 			return err
 		}
-		MessageService.SendTopicRecommendMsg(topicId)
 	} else {
 		if err := s.UpdateColumn(topicId, "recommend", recommend); err != nil {
 			return err
 		}
 	}
+
+	// 发送事件
+	event.Send(event.TopicRecommendEvent{
+		TopicId:   topicId,
+		Recommend: recommend,
+	})
 
 	// 添加索引
 	es.UpdateTopicIndex(s.Get(topicId))
@@ -266,7 +269,7 @@ func (s *topicService) SetRecommend(topicId int64, recommend bool) error {
 	return nil
 }
 
-// 话题的标签
+// GetTopicTags 话题的标签
 func (s *topicService) GetTopicTags(topicId int64) []model.Tag {
 	topicTags := repositories.TopicTagRepository.Find(simple.DB(), simple.NewSqlCnd().Where("topic_id = ?", topicId))
 
@@ -277,7 +280,7 @@ func (s *topicService) GetTopicTags(topicId int64) []model.Tag {
 	return cache.TagCache.GetList(tagIds)
 }
 
-// 获取帖子分页列表
+// GetTopics 获取帖子分页列表
 func (s *topicService) GetTopics(nodeId, cursor int64, recommend bool) (topics []model.Topic, nextCursor int64, hasMore bool) {
 	limit := 20
 	cnd := simple.NewSqlCnd()
